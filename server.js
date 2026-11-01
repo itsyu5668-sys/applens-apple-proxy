@@ -4,7 +4,9 @@
 // (Apple 429s Cloudflare egress). Only serves public Apple data.
 // Auth: every request except /health must send header
 // x-applens-proxy-key matching env APPLE_PROXY_KEY, else 401.
-// Tiny in-memory cache: 5 minutes per URL.
+// Tiny in-memory cache: 1 hour per URL. Store lookups and rankings
+// barely change within an hour, and a warm cache means the Worker
+// rarely waits on a fresh store fetch at all.
 const http = require('http');
 
 const PORT = process.env.PORT || 3000;
@@ -12,7 +14,7 @@ const PROXY_KEY = process.env.APPLE_PROXY_KEY || '';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
 const cache = new Map(); // url -> {at, status, body}
-const CACHE_MS = 5 * 60 * 1000;
+const CACHE_MS = 60 * 60 * 1000;
 
 function cachedFetch(url) {
   const hit = cache.get(url);
