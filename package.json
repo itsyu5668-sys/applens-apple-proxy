@@ -1,0 +1,1 @@
+{"description":"Tiny proxy that fetches public Apple iTunes Search and reviews RSS data from Render IPs for AppLens.","engines":{"node":">=20"},"main":"server.js","name":"applens-apple-proxy","private":true,"scripts":{"start":"node server.js"},"version":"1.0.0"}
