@@ -49,6 +49,15 @@ const server = http.createServer(async (req, res) => {
       if (r.status !== 200) return send(res, r.status, { error: `Apple API ${r.status} for iTunes search` });
       return send(res, 200, JSON.parse(r.body));
     }
+    if (url.pathname === '/lookup-id') {
+      const trackId = (url.searchParams.get('track_id') || '').trim();
+      const country = (url.searchParams.get('country') || 'US').toUpperCase();
+      if (!trackId) return send(res, 400, { error: 'track_id is required' });
+      const apple = `https://itunes.apple.com/lookup?id=${encodeURIComponent(trackId)}&entity=software&country=${encodeURIComponent(country)}`;
+      const r = await cachedFetch(apple);
+      if (r.status !== 200) return send(res, r.status, { error: `Apple API ${r.status} for iTunes lookup` });
+      return send(res, 200, JSON.parse(r.body));
+    }
     if (url.pathname === '/rank') {
       const trackId = (url.searchParams.get('track_id') || '').trim();
       const keyword = (url.searchParams.get('keyword') || '').trim();
